@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package envoy.config.filter.http.s3_auth.v2alpha;
+
+import "udpa/annotations/migrate.proto";
+import "validate/validate.proto";
+
+option java_package = "io.envoyproxy.envoy.config.filter.http.s3_auth.v2alpha";
+option java_outer_classname = "S3AuthProto";
+option java_multiple_files = true;
+option (udpa.annotations.file_migrate).move_to_package = "envoy.extensions.filters.http.s3_auth.v3";
+
+// [#protodoc-title: S3Auth]
+// S3Auth :ref:`configuration overview <config_http_filters_s3_auth>`.
+// [#extension: envoy.filters.http.s3_auth]
+
+// Top level configuration for the S3 auth filter.
+message S3Auth {
+}

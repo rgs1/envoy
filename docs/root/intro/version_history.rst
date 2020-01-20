@@ -50,6 +50,7 @@ Version history
 * server: added the :option:`--disable-extensions` CLI option, to disable extensions at startup.
 * server: fixed a bug in config validation for configs with runtime layers.
 * server: added :ref:`workers_started <config_listener_manager_stats>` that indicates whether listeners have been fully initialized on workers.
+* s3_auth: added new alpha :ref:`HTTP S3 auth filter <config_http_filters_s3_auth>`.
 * tcp_proxy: added :ref:`ClusterWeight.metadata_match<envoy_api_field_config.filter.network.tcp_proxy.v2.TcpProxy.WeightedCluster.ClusterWeight.metadata_match>`.
 * tcp_proxy: added :ref:`hash_policy<envoy_api_field_config.filter.network.tcp_proxy.v2.TcpProxy.hash_policy>`.
 * thrift_proxy: added support for cluster header based routing.

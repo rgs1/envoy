@@ -376,7 +376,7 @@ def hasInvalidAngleBracketDirectory(line):
   return subdir in SUBDIR_SET
 
 
-VERSION_HISTORY_NEW_LINE_REGEX = re.compile("\* [a-z \-_]*: [a-z:`]")
+VERSION_HISTORY_NEW_LINE_REGEX = re.compile("\* [a-z0-9 \-_]*: [a-z:`]")
 VERSION_HISTORY_NEW_RELEASE_REGEX = re.compile("^====[=]+$")
 
 

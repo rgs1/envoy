@@ -64,6 +64,8 @@ public:
   const std::string OriginalSrc = "envoy.filters.http.original_src";
   // Dynamic forward proxy filter
   const std::string DynamicForwardProxy = "envoy.filters.http.dynamic_forward_proxy";
+  // S3 Authentication filter
+  const std::string S3Auth = "envoy.filters.http.s3_auth";
 };
 
 using HttpFilterNames = ConstSingleton<HttpFilterNameValues>;

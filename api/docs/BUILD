@@ -56,6 +56,7 @@ proto_library(
         "//envoy/config/filter/http/rate_limit/v2:pkg",
         "//envoy/config/filter/http/rbac/v2:pkg",
         "//envoy/config/filter/http/router/v2:pkg",
+        "//envoy/config/filter/http/s3_auth/v2alpha:pkg",
         "//envoy/config/filter/http/squash/v2:pkg",
         "//envoy/config/filter/http/tap/v2alpha:pkg",
         "//envoy/config/filter/http/transcoder/v2:pkg",
