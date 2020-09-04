@@ -359,6 +359,7 @@ std::vector<FormatterProviderPtr> SubstitutionFormatParser::parse(const std::str
 
 FormatterProviderPtr SubstitutionFormatParser::parseBuiltinCommand(const std::string& token) {
   static constexpr absl::string_view DYNAMIC_META_TOKEN{"DYNAMIC_METADATA("};
+  static constexpr absl::string_view DYNAMIC_META_UNQUOTED_TOKEN{"DYNAMIC_METADATA_UNQUOTED("};
   static constexpr absl::string_view CLUSTER_META_TOKEN{"CLUSTER_METADATA("};
   static constexpr absl::string_view FILTER_STATE_TOKEN{"FILTER_STATE("};
   static constexpr absl::string_view PLAIN_SERIALIZATION{"PLAIN"};
@@ -403,6 +404,14 @@ FormatterProviderPtr SubstitutionFormatParser::parseBuiltinCommand(const std::st
 
     parseCommand(token, start, ':', max_length, filter_namespace, path);
     return std::make_unique<ClusterMetadataFormatter>(filter_namespace, path, max_length);
+  } else if (absl::StartsWith(token, DYNAMIC_META_UNQUOTED_TOKEN)) {
+    std::string filter_namespace;
+    absl::optional<size_t> max_length;
+    std::vector<std::string> path;
+    const size_t start = DYNAMIC_META_UNQUOTED_TOKEN.size();
+
+    parseCommand(token, start, ':', max_length, filter_namespace, path);
+    return std::make_unique<DynamicMetadataFormatter>(filter_namespace, path, max_length, true);
   } else if (absl::StartsWith(token, FILTER_STATE_TOKEN)) {
     std::string key, serialize_type;
     absl::optional<size_t> max_length;
@@ -1136,8 +1145,9 @@ GrpcStatusFormatter::formatValue(const Http::RequestHeaderMap&,
 
 MetadataFormatter::MetadataFormatter(const std::string& filter_namespace,
                                      const std::vector<std::string>& path,
-                                     absl::optional<size_t> max_length)
-    : filter_namespace_(filter_namespace), path_(path), max_length_(max_length) {}
+                                     absl::optional<size_t> max_length, bool unquoted)
+    : filter_namespace_(filter_namespace), path_(path), max_length_(max_length),
+      unquoted_(unquoted) {}
 
 absl::optional<std::string>
 MetadataFormatter::formatMetadata(const envoy::config::core::v3::Metadata& metadata) const {
@@ -1148,6 +1158,17 @@ MetadataFormatter::formatMetadata(const envoy::config::core::v3::Metadata& metad
 
   std::string json = MessageUtil::getJsonStringFromMessageOrDie(value, false, true);
   truncate(json, max_length_);
+
+  if (unquoted_) {
+    if (absl::StartsWith(json, "\"")) {
+      json.erase(0, 1);
+    }
+
+    if (absl::EndsWith(json, "\"")) {
+      json.pop_back();
+    }
+  }
+
   return json;
 }
 
@@ -1175,8 +1196,8 @@ MetadataFormatter::formatMetadataValue(const envoy::config::core::v3::Metadata& 
 // @htuch. See: https://github.com/envoyproxy/envoy/issues/3006
 DynamicMetadataFormatter::DynamicMetadataFormatter(const std::string& filter_namespace,
                                                    const std::vector<std::string>& path,
-                                                   absl::optional<size_t> max_length)
-    : MetadataFormatter(filter_namespace, path, max_length) {}
+                                                   absl::optional<size_t> max_length, bool unquoted)
+    : MetadataFormatter(filter_namespace, path, max_length, unquoted) {}
 
 absl::optional<std::string> DynamicMetadataFormatter::format(
     const Http::RequestHeaderMap&, const Http::ResponseHeaderMap&, const Http::ResponseTrailerMap&,
